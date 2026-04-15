@@ -160,7 +160,7 @@ SIMPLE_JWT = {
 }
 
 # CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
+CORS_ALLOW_ALL_ORIGINS = True  # Temporarily True for debugging production
 
 cors_origins = os.getenv('CORS_ALLOWED_ORIGINS')
 if cors_origins:
