@@ -3,7 +3,7 @@ services:
   - type: web
     name: bunnyrido-backend
     env: python
-    region: singapore
+    region: oregon
     plan: free
     buildCommand: "pip install -r requirements.txt && python backend/manage.py migrate && python backend/manage.py collectstatic --no-input"
     startCommand: "gunicorn --chdir backend config.wsgi:application"
@@ -25,7 +25,7 @@ services:
   - type: static
     name: bunnyrido-frontend
     env: static
-    region: singapore
+    region: oregon
     plan: free
     buildCommand: "npm install && npm run build"
     staticPublishDir: "dist"
@@ -39,5 +39,5 @@ services:
 
 databases:
   - name: bunnyrido-db
-    region: singapore
+    region: oregon
     plan: free
