@@ -1,4 +1,5 @@
-# Node.js
+# Static files
+staticfiles/
 node_modules/
 dist/
 build/
