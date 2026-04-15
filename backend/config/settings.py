@@ -2,8 +2,14 @@
 Django settings for BunnyRido project.
 """
 
+import os
+import dj_database_url
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file if it exists
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,12 +17,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xmp_5%@22tlx(otk!*l6pc_@o2z5+jj7@e51l%nwi9g!l9d5h1'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-xmp_5%@22tlx(otk!*l6pc_@o2z5+jj7@e51l%nwi9g!l9d5h1')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -75,16 +81,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'BunnnyRido',
-        'USER': 'postgres',
-        'PASSWORD': 'abi12@@@',
-        'HOST': 'localhost',
-        'PORT': '5432',
+# Use DATABASE_URL from environment on Render, fallback to local settings
+if os.getenv('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'BunnnyRido',
+            'USER': 'postgres',
+            'PASSWORD': 'abi12@@@',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
@@ -142,9 +154,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# CORS Configuration (allow React dev server)
+# CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',  # Vite dev server
-    'http://localhost:3000',  # Alternate React dev server
-]
+
+cors_origins = os.getenv('CORS_ALLOWED_ORIGINS')
+if cors_origins:
+    CORS_ALLOWED_ORIGINS = cors_origins.split(',')
+else:
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:5173',  # Vite dev server
+        'http://localhost:3000',  # Alternate React dev server
+    ]
